@@ -1,0 +1,53 @@
+<!--
+    Copyright 2020 Chase Kidder
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+{% extends "base.html" %}
+{% load static %}
+
+<!-- Child Specific CSS Sheets (override parents)-->
+{% block child-css %}
+<link rel="stylesheet" href="{% static 'ui/css/feeds.css' %}">
+{% endblock %}
+
+<!-- Child Specific Page Content-->
+{% block content %}
+    <!-- Display Form Errors-->
+    {% if form.url.errors %}
+    <div class="alert-error">
+        {{ form.url.errors }}
+    </div>
+    {% endif %}
+
+    <!-- Page Action Text-->
+    <div class='text-center'>
+        <h2>Select a feed:</h2>
+    </div>
+
+    <!-- Feed URL Form-->
+    <form method="get" class="container-fluid d-flex justify-content-center">
+        <div class="row w-40 ">
+            <div class="col input-group ">
+                {{ form.feed }} 
+            </div>
+
+            <div class="col input-group ">
+                <input type="submit" id="go-btn" value="VIEW" class=" btn btn-primary btn-block" />
+            </div>
+        </div>
+    </form> 
+
+
+{% endblock %}

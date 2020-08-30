@@ -16,6 +16,15 @@ Copyright 2020 Chase Kidder
 
 from django import forms
 
+FEEDS = (
+    ("1", "Feed1"),
+    ("2", "Feed2"),
+    ("3", "Feed3")
+
+)
 
 class IndexForm(forms.Form):
     url = forms.CharField(max_length=2000, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'https://'}))
+
+class FeedForm(forms.Form):
+    feed = forms.ChoiceField(choices=FEEDS)

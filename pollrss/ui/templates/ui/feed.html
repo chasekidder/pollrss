@@ -1,0 +1,68 @@
+<!--
+    Copyright 2020 Chase Kidder
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+{% extends "base.html" %}
+{% load static %}
+
+<!-- Child Specific CSS Sheets (override parents)-->
+{% block child-css %}
+<link rel="stylesheet" href="{% static 'ui/css/feed.css' %}">
+{% endblock %}
+
+
+<!-- Child Specific Page Content-->
+{% block content %}
+
+    <div class='text-center'>
+        <h2>Viewing feed:</h2>
+        <h3> {{feed_name}}</h3>
+    </div>
+
+
+    <div class="container " id="feed-container">
+        <div class="row d-flex justify-content-center">
+            <div class="col" id="xml-parent">
+
+                <object id="xml-object" class="w-100" data="" type="text/xml"></object>
+
+                 <script type="text/javascript">
+                    // Create temporary element to compute xml height
+                    var temp_elem = document.createElement("textarea");
+                    var parent_elem = document.getElementById("xml-parent");
+                    parent_elem.appendChild(temp_elem);
+
+                    // Process xml data from django
+                    xml_b64 = "{{feed_xml}}";
+                    xml_string = atob(xml_b64);
+                    
+                    // Calculate element height
+                    temp_elem.value = xml_string;
+                    var new_height = temp_elem.scrollHeight * .55;
+
+                    // Finalize xml object
+                    xml_elem = document.getElementById("xml-object");
+                    xml_elem.height = new_height;
+                    xml_elem.data = "data:text/xml;charset=UTF-8;base64," + xml_b64;
+                    
+                    // Clean up
+                    temp_elem.remove();
+                </script>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
