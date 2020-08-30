@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!-- Child Specific CSS Sheets (override parents)-->
+{% block child-css %}
+<link rel="stylesheet" href="{% static 'ui/css/index.css' %}">
+{% endblock %}
+
+<!-- Child Specific Page Content-->
+{% block content %}
+    <!-- Display Form Errors-->
+    {% if form.url.errors %}
+    <div class="alert-error">
+        {{ form.url.errors }}
+    </div>
+    {% endif %}
+
+    <!-- Page Action Text-->
+    <div class='text-center'>
+        <h2>Enter a URL to create a feed:</h2>
+    </div>
+
+    <!-- Feed URL Form-->
+    <form method="get" class="container-fluid d-flex justify-content-center">
+        <div class="row w-50">
+            <div class="col-8 input-group">
+                {{ form.url }} 
+            </div>
+
+            <div class="col-4 input-group justify-content-end">
+                <input type="submit" id="go-btn" value="CREATE" class=" btn btn-primary btn-block" />
+            </div>
+        </div>
+    </form> 
+
+
+{% endblock %}
