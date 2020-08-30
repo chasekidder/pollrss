@@ -22,7 +22,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from .models import Feed, Field, FeedField
+from .models import Feed, FeedField, Post
 from .forms import IndexForm, FeedForm
 from .rfeed import *
 
