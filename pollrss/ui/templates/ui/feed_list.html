@@ -1,0 +1,52 @@
+<!--
+Copyright 2020 Chase Kidder
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "base.html" %}
+{% load static %}
+
+<!-- Child Specific CSS Sheets (override parents)-->
+{% block child-css %}
+    <link rel="stylesheet" href="{% static 'ui/css/feed_list.css' %}">
+{% endblock %}
+
+
+<!-- Child Specific Page Content-->
+{% block content %}
+    <!-- Page Action Text-->
+    <div class='text-center'>
+        <h2>RSS Feed List</h2>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="row">
+            <div class="col">
+                <div class="rounded bg-light">
+                    {% if feed_list %}
+                        <ul>
+                            {% for feed in feed_list %}
+                                <li>
+                                    <a href="/feed/?feed={{feed.id}}">{{ feed.url }}</a> ({{feed.updated}})
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>There are no feeds in the database.</p>
+                    {% endif %}  
+                </div>
+            </div> 
+        </div>
+    </div>    
+{% endblock %}

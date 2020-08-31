@@ -17,19 +17,21 @@ Copyright 2020 Chase Kidder
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
+from django.views import generic
 
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from .models import Feed, FeedField, Post
+from .models import Feed, FeedField, Item, ItemField
 from .forms import IndexForm, FeedForm
-from .rfeed import *
+from . import rss
 
 import requests
 import urllib
 from base64 import b64encode
 from bs4 import BeautifulSoup
+
 
 # Serve the index page and get url
 def index(request):
@@ -45,11 +47,12 @@ def index(request):
             except ValidationError:
                 form.add_error('url', 'Invalid url')
             else:
-                return HttpResponseRedirect('/create?url=%s' % urllib.parse.quote(url.encode('utf8')))
+                return HttpResponseRedirect('/create/?url=%s' % urllib.parse.quote(url.encode('utf8')))
     else:
         form = IndexForm()
 
     return render(request, 'ui/index.html', {'form': form})
+
 
 @ensure_csrf_cookie
 def create(request):
@@ -68,66 +71,33 @@ def create(request):
 
     return HttpResponseBadRequest('Url is required')
 
-def feeds(request):
-    if request.method == 'GET' and 'feed' in request.GET:
-        form = FeedForm(request.GET)
-        if form.is_valid():
-            feed = request.GET['feed']
 
-            return HttpResponseRedirect('/feed?feed=%s' % feed)
+class FeedListView(generic.ListView):
+	model = Feed
 
-    else:
-        form = FeedForm()
-
-    return render(request, 'ui/feeds.html', {'form': form})
 
 @ensure_csrf_cookie
 def feed(request):
     if request.method == 'GET' and 'feed' in request.GET:
         feed_id = request.GET['feed']
 
-        import datetime
-
-        test_item1 = Item(
-            title = "First article",
-            link = "http://www.example.com/articles/1", 
-            description = "This is the description of the first article",
-            author = "Santiago L. Valdarrama",
-            guid = Guid("http://www.example.com/articles/1"),
-            pubDate = datetime.datetime(2014, 12, 29, 10, 00)
-            )   
-
-        test_item2 = Item(
-            title = "Second article",
-            link = "http://www.example.com/articles/2", 
-            description = "This is the description of the second article",
-            author = "Santiago L. Valdarrama",
-            guid = Guid("http://www.example.com/articles/2"),
-            pubDate = datetime.datetime(2014, 12, 30, 14, 15)
-            )
-
+        rss_feed = rss.create_rss_feed(feed_id)
         
-
-        feed = Feed(
-            title = "Sample RSS Feed",
-            link = "http://www.example.com/rss",
-            description = r"""<script xmlns="http://www.w3.org/1999/xhtml"><![CDATA[alert('Hello');]]></script>""",
-            language = "en-US",
-            lastBuildDate = datetime.datetime.now(),
-            items = [test_item1, test_item2]
-            )
-
-        soup = BeautifulSoup(feed.rss(), "xml")
+        print(rss_feed)
+        
+        soup = BeautifulSoup(rss_feed.rss(), "xml")
+        
         pretty_xml = soup.prettify()
-
-        pretty_xml = pretty_xml
 
         b64_xml = b64encode(pretty_xml.encode('utf-8'))
 
-        return render(request, 'ui/feed.html',
-                        {
-                            'feed_name': "Test Feed",
-                            'feed_xml': b64_xml.decode("utf-8")
-                        })
+        context = {
+                    'feed_name': rss_feed.title,
+                    'feed_xml': b64_xml.decode("utf-8")
+                }
+
+        return render(request, 'ui/feed.html', context=context)
 
     return HttpResponseBadRequest('Feed is required')
+
+
