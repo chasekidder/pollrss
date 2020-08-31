@@ -83,8 +83,6 @@ def feed(request):
 
         rss_feed = rss.create_rss_feed(feed_id)
         
-        print(rss_feed)
-        
         soup = BeautifulSoup(rss_feed.rss(), "xml")
         
         pretty_xml = soup.prettify()
