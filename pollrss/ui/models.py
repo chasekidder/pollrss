@@ -22,12 +22,32 @@ class Feed(models.Model):
     url = models.CharField(max_length=2000)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField()
-    
+
+    def __str__(self):
+        return str(self.id) + " - " + self.url
+
 class FeedField(models.Model):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     required = models.BooleanField(default=True)
+    value = models.CharField(max_length=2000)
 
-class Post(models.Model):
+    def __str__(self):
+        return str(self.feed.id) + " - " + self.name
+
+class Item(models.Model):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
+    fingerprint = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return str(self.feed.id) + " - " + str(self.id)
+
+class ItemField(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    required = models.BooleanField(default=True)
+    value = models.CharField(max_length=2000)
+
+    def __str__(self):
+        return str(self.item.id) + " - " + self.name

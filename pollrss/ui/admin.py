@@ -18,6 +18,9 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Feed
+from .models import Feed, FeedField, Item, ItemField
 
 admin.site.register(Feed)
+admin.site.register(FeedField)
+admin.site.register(Item)
+admin.site.register(ItemField)
