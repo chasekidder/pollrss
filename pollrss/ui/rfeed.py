@@ -748,10 +748,11 @@ class Feed(Host):
 		self._write_element("ttl", self.ttl)
 		self._write_element("rating", self.rating)
 
-		for category in self.categories:
-			if isinstance(category, basestring):
-				category = Category(category)
-			category.publish(self.handler)
+		if self.categories is not None:
+			for category in self.categories:
+				if isinstance(category, basestring):
+					category = Category(category)
+				category.publish(self.handler)
 
 		if self.cloud is not None:
 			self.cloud.publish(self.handler)
@@ -768,22 +769,25 @@ class Feed(Host):
 		if self.skipDays is not None:
 			self.skipDays.publish(self.handler)
 
-		for extension in self.extensions:
-			extension.publish(self.handler)
+		if self.extensions is not None:
+			for extension in self.extensions:
+				extension.publish(self.handler)
 
-		for item in self.items:
-			item.publish(self.handler)
+		if self.items is not None:
+			for item in self.items:
+				item.publish(self.handler)
 
 		handler.endElement("channel")
 
 	def _get_attributes(self):
 		attributes = {"version": "2.0", "xmlns:dc" : "http://purl.org/dc/elements/1.1/"}
 
-		for extension in self.extensions:
-			if isinstance(extension, Extension):
-				namespace = extension.get_namespace()
-				if namespace is not None:
-					attributes = dict(itertools.chain(attributes.items(), namespace.items()))
+		if self.extensions is not None:
+			for extension in self.extensions:
+				if isinstance(extension, Extension):
+					namespace = extension.get_namespace()
+					if namespace is not None:
+						attributes = dict(itertools.chain(attributes.items(), namespace.items()))
 
 		return attributes
 
