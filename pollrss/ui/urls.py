@@ -21,7 +21,7 @@ from . import views
 
 urlpatterns = [
                 path('', views.index, name = 'index'),
-                path('create', views.create, name = 'create'),
-                path('feeds', views.feeds, name = 'feeds'),
-                path('feed', views.feed, name = 'feed'),
+                path('create/', views.create, name = 'create'),
+                path('feeds/', views.FeedListView.as_view(), name = 'feeds'),
+                path('feed/', views.feed, name = 'feed'),
                 ]
