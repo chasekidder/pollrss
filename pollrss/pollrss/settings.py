@@ -94,12 +94,12 @@ WSGI_APPLICATION = 'pollrss.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'db_pollrss'),
-        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'user_pollrss'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'pollrss')
+        'ENGINE': os.environ.get('DJANGO_DB_ENGINE', ''),
+        'NAME': os.environ.get('DJANGO_DB_NAME', ''),
+        'HOST': os.environ.get('DJANGO_DB_HOST', ''),
+        'PORT': os.environ.get('DJANGO_DB_PORT', ''),
+        'USER': os.environ.get('DJANGO_DB_USER', ''),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', '')
     }
 }
 

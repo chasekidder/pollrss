@@ -138,6 +138,7 @@ def __create_rss_items(items: dict) -> list:
 
         rss_items.append(rss_item)
 
+    breakpoint()
     return rss_items
 
 

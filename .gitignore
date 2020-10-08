@@ -135,3 +135,5 @@ run-server.sh
 
 RSSNotes
 .run-server.sh.swp
+pollrss/db_pollrss
+db_pollrss
