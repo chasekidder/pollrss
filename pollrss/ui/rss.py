@@ -18,23 +18,42 @@ import datetime
 from . import rfeed
 from .models import Feed, FeedField, Item, ItemField
 
-# Add new db entry
-#from .models import Feed
-#f = Feed(elements={}, posts={})
-#f.save()
-
-
 
 class FeedObj():
+    """Database Feed Object
+
+    Args:
+        None
+
+    Elements:
+        elements (Dict): Dictionary of feed element names and values.
+        items (Dict): Dictionary of item objects (ItemObj).
+    """
     elements = {}
     items = {}
 
 
 class ItemObj():
+    """Database Feed Item Object
+
+    Args:
+        None
+
+    Elements:
+        elements (Dict): Dictionary of item element names and values.
+    """
     elements = {}
 
 
 def create_rss_feed(feed_id: int) -> rfeed.Feed:
+    """Create a finalized rfeed RSS feed from information in database.
+
+    Args:
+        feed_id (int): Unique database feed identifier.
+
+    Returns:
+        rfeed.Feed: Finalized rfeed Feed object.
+    """
     optional_elems = {
                 "language": None,
                 "copyright": None,
@@ -100,6 +119,14 @@ def create_rss_feed(feed_id: int) -> rfeed.Feed:
 
 
 def __create_rss_items(items: dict) -> list:
+    """Convert a list of database feed items into a list of rfeed item objects.
+
+    Args:
+        items (dict): Dictionary of database items identified by fingerprint.
+
+    Returns:
+        list: List of finalized rfeed item objects.
+    """
     rss_items = []
 
     optional_elems = {
@@ -146,6 +173,14 @@ def __create_rss_items(items: dict) -> list:
 
 
 def __create_feed(feed_id: int) -> FeedObj:
+    """Creates feed object to contain database feed fields and items for a specific feed.
+
+    Args:
+        feed_id (int): Unique feed identifier from database.
+
+    Returns:
+        FeedObj: Object containing all feed info and items.
+    """
     xml_feed = FeedObj()
     db_feed = Feed.objects.get(pk=feed_id)
     items = [""]
@@ -159,6 +194,15 @@ def __create_feed(feed_id: int) -> FeedObj:
 
 
 def __create_items(db_feed: Feed) -> dict:
+    """Create a dictionary of items from all related items in database. Identified by fingerprint.
+
+    Args:
+        db_feed (Feed): The database feed object.
+
+    Returns:
+        dict: Related database items tagged by fingerprint.
+    """
+
     xml_items = {} 
     for item in db_feed.item_set.all():
         xml_items[item.fingerprint] = ItemObj()
