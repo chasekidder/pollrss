@@ -153,4 +153,4 @@ STATIC_URL = '/static/'
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-APPEND_SLASH = False
+APPEND_SLASH = True
