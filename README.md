@@ -20,3 +20,4 @@ limitations under the License.
 
 Portions of this software are copyright of their respective authors and released under the MIT license:
 - [politepol](https://github.com/taroved/pol), Copyright 2016 Alexandr Nesterenko
+- [rfeed](https://github.com/svpino/rfeed), Copyright 2014 Santiago Valdarrama
