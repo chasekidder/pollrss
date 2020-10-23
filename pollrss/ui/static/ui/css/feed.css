@@ -1,5 +1,5 @@
-'''
-Copyright 2020 Chase Kidder
+/*
+    Copyright 2020 Chase Kidder
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -12,16 +12,5 @@ Copyright 2020 Chase Kidder
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-'''
+*/
 
-from django.urls import path
-
-from . import views
-
-
-urlpatterns = [
-                path('', views.index, name = 'index'),
-                path('create/', views.create, name = 'create'),
-                path('feeds/', views.FeedListView.as_view(), name = 'feeds'),
-                path('feed/', views.feed, name = 'feed'),
-                ]

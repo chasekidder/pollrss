@@ -17,17 +17,21 @@ Copyright 2020 Chase Kidder
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
+from django.views import generic
 
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from .models import Feed, Field, FeedField
-from .forms import IndexForm
+from .models import Feed, FeedField, Item, ItemField
+from .forms import IndexForm, FeedForm
+from . import rss
 
 import requests
 import urllib
 from base64 import b64encode
+from bs4 import BeautifulSoup
+
 
 # Serve the index page and get url
 def index(request):
@@ -43,11 +47,12 @@ def index(request):
             except ValidationError:
                 form.add_error('url', 'Invalid url')
             else:
-                return HttpResponseRedirect('/create?url=%s' % urllib.parse.quote(url.encode('utf8')))
+                return HttpResponseRedirect('/create/?url=%s' % urllib.parse.quote(url.encode('utf8')))
     else:
         form = IndexForm()
 
     return render(request, 'ui/index.html', {'form': form})
+
 
 @ensure_csrf_cookie
 def create(request):
@@ -65,3 +70,32 @@ def create(request):
                         })
 
     return HttpResponseBadRequest('Url is required')
+
+
+class FeedListView(generic.ListView):
+	model = Feed
+
+
+@ensure_csrf_cookie
+def feed(request):
+    if request.method == 'GET' and 'feed' in request.GET:
+        feed_id = request.GET['feed']
+
+        rss_feed = rss.create_rss_feed(feed_id)
+        
+        soup = BeautifulSoup(rss_feed.rss(), "xml")
+        
+        pretty_xml = soup.prettify()
+
+        b64_xml = b64encode(pretty_xml.encode('utf-8'))
+
+        context = {
+                    'feed_name': rss_feed.title,
+                    'feed_xml': b64_xml.decode("utf-8")
+                }
+
+        return render(request, 'ui/feed.html', context=context)
+
+    return HttpResponseBadRequest('Feed is required')
+
+

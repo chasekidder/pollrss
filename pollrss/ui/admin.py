@@ -1,5 +1,5 @@
 '''
-Copyright 2020 Chase Kidder
+    Copyright 2020 Chase Kidder
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Feed
+from .models import Feed, FeedField, Item, ItemField
 
 admin.site.register(Feed)
+admin.site.register(FeedField)
+admin.site.register(Item)
+admin.site.register(ItemField)

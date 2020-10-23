@@ -19,24 +19,36 @@ from django.db import models
 # Create your models here.
 
 class Feed(models.Model):
-    uri = models.CharField(max_length=2000)
-    xpath = models.CharField(max_length=2000)
-    edited = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField()
 
-class Field(models.Model):
-    name = models.CharField(max_length=200)
-    required = models.BooleanField(default=True)
+    def __str__(self):
+        return str(self.id)
 
 class FeedField(models.Model):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    field = models.ForeignKey(Field, on_delete=models.CASCADE)
-    xpath = models.CharField(max_length=2000)
+    name = models.CharField(max_length=200)
+    required = models.BooleanField(default=True)
+    value = models.CharField(max_length=2000)
 
-class Post(models.Model):
+    def __str__(self):
+        return str(self.feed.id) + " - " + self.name
+
+class Item(models.Model):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    md5sum = models.CharField(max_length=32)
     created = models.DateTimeField(auto_now_add=True)
+    fingerprint = models.CharField(max_length=64, unique=True)
 
-    class Meta:
-        index_together = ['feed', 'md5sum']
+    def __str__(self):
+        return str(self.feed.id) + " - " + str(self.id)
+
+class ItemField(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    required = models.BooleanField(default=True)
+    value = models.CharField(max_length=2000)
+
+    def __str__(self):
+        return str(self.item.id) + " - " + self.name
+
+
