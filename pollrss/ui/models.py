@@ -19,12 +19,11 @@ from django.db import models
 # Create your models here.
 
 class Feed(models.Model):
-    url = models.CharField(max_length=2000)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField()
 
     def __str__(self):
-        return str(self.id) + " - " + self.url
+        return str(self.id)
 
 class FeedField(models.Model):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
@@ -51,3 +50,5 @@ class ItemField(models.Model):
 
     def __str__(self):
         return str(self.item.id) + " - " + self.name
+
+

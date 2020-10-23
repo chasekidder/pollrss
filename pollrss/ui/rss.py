@@ -42,7 +42,7 @@ def create_rss_feed(feed_id: int) -> rfeed.Feed:
                 "webMaster": None,
                 "pubDate": None,
                 "lastBuildDate": None,
-                "categories": None,
+                "categories": [],
                 "generator": None,
                 "docs": None,
                 "cloud": None,
@@ -52,8 +52,7 @@ def create_rss_feed(feed_id: int) -> rfeed.Feed:
                 "textInput": None,
                 "skipHours": None,
                 "skipDays": None,
-                "items": None,
-                "extensions": None
+                "extensions": []
             }
 
     feed_obj = __create_feed(feed_id)
@@ -72,6 +71,12 @@ def create_rss_feed(feed_id: int) -> rfeed.Feed:
 
         except:
             pass
+
+    if feed_obj.items == False:
+        rss_feed.items = []
+    else:
+        rss_feed.items = feed_obj.items
+        pass
     
     rss_feed.language = optional_elems["language"]
     rss_feed.copyright = optional_elems["copyright"]
@@ -89,7 +94,6 @@ def create_rss_feed(feed_id: int) -> rfeed.Feed:
     rss_feed.textInput = optional_elems["textInput"]
     rss_feed.skipHours = optional_elems["skipHours"]
     rss_feed.skipDays = optional_elems["skipDays"]
-    rss_feed.items = optional_elems["items"]
     rss_feed.extensions = optional_elems["extensions"]
 
     return rss_feed
@@ -104,13 +108,13 @@ def __create_rss_items(items: dict) -> list:
                     "description": None,
                     "author": None,
                     "creator": None,
-                    "categories": None,
+                    "categories": [],
                     "comments": None,
                     "enclosure": None,
                     "guid": None,
                     "pubDate": None,
                     "source": None,
-                    "extensions": None
+                    "extensions": []
                 }
 
     for item in items:
@@ -138,25 +142,25 @@ def __create_rss_items(items: dict) -> list:
 
         rss_items.append(rss_item)
 
-    breakpoint()
     return rss_items
 
 
 def __create_feed(feed_id: int) -> FeedObj:
     xml_feed = FeedObj()
     db_feed = Feed.objects.get(pk=feed_id)
+    items = [""]
 
     for field in db_feed.feedfield_set.all():
         xml_feed.elements[field.name] = field.value
 
-    xml_feed.items = __create_items(xml_feed)
+    xml_feed.items = __create_items(db_feed)
 
     return xml_feed
 
 
 def __create_items(db_feed: Feed) -> dict:
     xml_items = {} 
-    for item in db_feed.items:
+    for item in db_feed.item_set.all():
         xml_items[item.fingerprint] = ItemObj()
 
         for field in item.itemfield_set.all():
