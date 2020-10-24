@@ -17,6 +17,7 @@
 import datetime
 from . import rfeed
 from .models import Feed, FeedField, Item, ItemField
+from django.db import transaction
 
 import requests
 from bs4 import BeautifulSoup
@@ -218,6 +219,72 @@ def __create_items(db_feed: Feed) -> dict:
             xml_items[item.fingerprint].elements[field.name] = field.value
 
     return xml_items
+
+
+#TODO: Need function that updates existing feeds in the database. Eg. check new feed against database fingerprints and only add new ones.
+
+
+def write_feed_to_database(url: str):
+    """Fetch an RSS feed from URL and write it to a new feed in the database.
+
+    Args:
+        url (str): Source RSS feed URL.
+
+    Returns:
+        int: New database Feed ID. (0 = Not Created)
+    """
+
+    feed = fetch_feed_from_url(url)
+
+    print("Feed Exists: " + str(__feed_exists(url)))
+
+    # Check for feed existence
+    if (__feed_exists(url)):
+        print("Feed Already Exists!")
+
+    else:
+
+        # Start a bulk database transaction
+        with transaction.atomic():
+
+            # Create a new feed entry in database
+            db_feed = Feed()
+            db_feed.save()
+
+            # Add all feed elements to database
+            for feed_field_name in feed.elements:
+                feed_field = FeedField(feed=db_feed)
+                feed_field.name = feed_field_name
+                feed_field.value = feed.elements[feed_field_name]
+                feed_field.required = True
+                feed_field.save()
+
+            # Create new item entries in database
+            for item_name in feed.items:
+                item = Item(feed=db_feed)
+                item.fingerprint = item_name
+                item.save()
+
+                # Add all item elements to database
+                for item_field_name in feed.items[item_name]:
+                    item_field = ItemField(item=item)
+                    item_field.name = item_field_name
+                    item_field.value = feed.items[item_name][item_field_name]
+                    item_field.save()
+
+        return db_feed.pk
+    
+    return 0
+
+
+def __feed_exists(url: str) -> bool:
+
+    try:
+        feeds = Feed.objects.get(feedfield__value__exact=url)
+    except Feed.DoesNotExist:
+        return False
+
+    return True
 
     
 def fetch_feed_from_url(url: str):

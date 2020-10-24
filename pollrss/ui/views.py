@@ -104,5 +104,5 @@ def feed(request):
 
 @ensure_csrf_cookie
 def test(request):
-    rss.write_feed_to_database("http://rss.cnn.com/rss/cnn_topstories.rss") 
+    print("result: " + rss.write_feed_to_database("http://rss.cnn.com/rss/cnn_topstories.rss")) 
     return HttpResponseBadRequest('RSS Feed Fetched')
