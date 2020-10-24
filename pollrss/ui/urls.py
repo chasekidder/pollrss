@@ -24,4 +24,5 @@ urlpatterns = [
                 path('create/', views.create, name = 'create'),
                 path('feeds/', views.FeedListView.as_view(), name = 'feeds'),
                 path('feed/', views.feed, name = 'feed'),
+                path('test/', views.test, name='test'),
                 ]
