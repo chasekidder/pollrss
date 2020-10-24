@@ -18,6 +18,11 @@ import datetime
 from . import rfeed
 from .models import Feed, FeedField, Item, ItemField
 
+import requests
+from bs4 import BeautifulSoup
+
+import hashlib
+
 
 class FeedObj():
     """Database Feed Object
@@ -114,6 +119,8 @@ def create_rss_feed(feed_id: int) -> rfeed.Feed:
     rss_feed.skipHours = optional_elems["skipHours"]
     rss_feed.skipDays = optional_elems["skipDays"]
     rss_feed.extensions = optional_elems["extensions"]
+
+    print (rss_feed.pubDate)
 
     return rss_feed
 
@@ -213,6 +220,112 @@ def __create_items(db_feed: Feed) -> dict:
     return xml_items
 
     
+def fetch_feed_from_url(url: str):
+
+    try:
+        response = requests.get(url)
+
+    except Exception as e:
+        print("RSS Feed fetch FAILED!" + e)
+        return 1
+
+    soup = BeautifulSoup(response.content, features='xml')
+
+    rss_feed = soup.find("rss")
+    
+    if rss_feed == False:
+        print("RSS Feed not found!")
+        return 1
+    
+    else:
+        print("Feed Found")
+
+    feed = FeedObj()
+
+    feed.elements = __parse_feed_elements_xml(rss_feed)
+    feed.items = __parse_feed_items_xml(rss_feed)
+
+    return feed
+    
+        
+        
+def __parse_feed_elements_xml(xml):
+    elements = {}
+    optional_elems = [
+                    "title",
+                    "link",
+                    "description",
+                    "author",
+                    "creator",
+                    "categories",
+                    "comments",
+                    "enclosure",
+                    "guid",
+                    "pubDate",
+                    "source",
+                    "extensions"
+                    ]
+
+    for element in optional_elems:
+        r = xml.find(element)
+
+        if r == None:
+            pass
+
+        else:
+            try:
+                elements[element] = r.contents
+            except:
+                pass
+    
+    return elements
 
 
+def __parse_feed_items_xml(xml):
+    final_items = {}
+    elements = {}
+    optional_elems = [
+                    "title",
+                    "link",
+                    "description",
+                    "author",
+                    "creator",
+                    "categories",
+                    "comments",
+                    "enclosure",
+                    "guid",
+                    "pubDate",
+                    "source",
+                    "extensions"
+                ]
+    fingerprint = ""
 
+    items = xml.findAll("item")
+
+    for item in items:
+        for element in optional_elems:
+            result = item.find(element)
+
+            if result == None:
+                pass
+
+            else:
+                # TODO: Make sure that if there is an already existing fingerprint that the newest one overrides the oldest.
+                if element == "title":
+                    fingerprint = __get_title_fingerprint(result.contents[0])
+                    final_items[fingerprint] = {}
+
+                try:
+                    item_dict = {element: result.contents[0]}
+                    final_items[fingerprint][element] = item_dict
+
+                except:
+                    pass
+
+    return final_items
+            
+
+def __get_title_fingerprint(data: str) -> str:
+    encoded_data = data.encode("utf-8")
+    
+    return str(hashlib.md5(encoded_data).hexdigest())
