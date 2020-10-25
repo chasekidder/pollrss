@@ -77,11 +77,10 @@ class FeedListView(generic.ListView):
 
 
 @ensure_csrf_cookie
-def feed(request):
-    if request.method == 'GET' and 'feed' in request.GET:
-        feed_id = request.GET['feed']
+def viewfeed(request, feed_id):
+    if request.method == 'GET':
 
-        rss_feed = rss.create_rss_feed(feed_id)
+        rss_feed = rss.create_rss_feed_from_object(feed_id)
         
         soup = BeautifulSoup(rss_feed.rss(), "xml")
         
@@ -100,9 +99,23 @@ def feed(request):
 
 
 
+@ensure_csrf_cookie
+def feed(request, feed_id):
+    if request.method == 'GET':
+
+        rss_feed = rss.create_rss_feed_from_object(feed_id).rss()
+
+        return HttpResponse(rss_feed, content_type='application/rss+xml')
+        #return render(request, "ui/feed.xml", context)
+
+    return HttpResponseBadRequest('Feed is required')
+
 
 
 @ensure_csrf_cookie
 def test(request):
-    print("result: " + rss.write_feed_to_database("http://rss.cnn.com/rss/cnn_topstories.rss")) 
-    return HttpResponseBadRequest('RSS Feed Fetched')
+    if request.method == 'GET':
+        url = "http://rss.cnn.com/rss/cnn_topstories.rss"
+        #print("result: " + str(rss.write_feed_to_database(rss.fetch_feed_from_link(url), url))) 
+        return HttpResponseRedirect('/viewfeed/%s' % str(rss.write_feed_to_database(rss.read_feed_from_link(url), url)))
+        #return HttpResponseBadRequest('RSS Feed Fetched')
