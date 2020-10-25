@@ -116,6 +116,4 @@ def feed(request, feed_id):
 def test(request):
     if request.method == 'GET':
         url = "http://rss.cnn.com/rss/cnn_topstories.rss"
-        #print("result: " + str(rss.write_feed_to_database(rss.fetch_feed_from_link(url), url))) 
         return HttpResponseRedirect('/viewfeed/%s' % str(rss.write_feed_to_database(rss.read_feed_from_link(url), url)))
-        #return HttpResponseBadRequest('RSS Feed Fetched')
