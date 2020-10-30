@@ -23,5 +23,7 @@ urlpatterns = [
                 path('', views.index, name = 'index'),
                 path('create/', views.create, name = 'create'),
                 path('feeds/', views.FeedListView.as_view(), name = 'feeds'),
-                path('feed/', views.feed, name = 'feed'),
+                path('feed/<int:feed_id>.rss', views.feed, name = 'feed'),
+                path('viewfeed/<int:feed_id>/', views.viewfeed, name = 'viewfeed'),
+                path('test/', views.test, name='test'),
                 ]

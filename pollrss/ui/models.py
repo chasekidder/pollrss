@@ -20,7 +20,8 @@ from django.db import models
 
 class Feed(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField()
+    updated = models.DateTimeField(auto_now=True)
+    rss_link = models.CharField(max_length=256, blank=True, default='')
 
     def __str__(self):
         return str(self.id)

@@ -29,6 +29,10 @@
     <div class='text-center'>
         <h2>Viewing feed:</h2>
         <h3> {{feed_name}}</h3>
+        <p>Paste this link into your RSS client: 
+            <a href="/feed/{{feed_id}}.rss">{{request.get_host}}/feed/{{feed_id}}.rss</a>
+        </p>
+        
     </div>
 
 
