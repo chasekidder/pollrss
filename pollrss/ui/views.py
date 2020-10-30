@@ -90,6 +90,7 @@ def viewfeed(request, feed_id):
 
         context = {
                     'feed_name': rss_feed.title,
+                    'feed_id': feed_id,
                     'feed_xml': b64_xml.decode("utf-8")
                 }
 
