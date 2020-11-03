@@ -131,9 +131,9 @@ dmypy.json
 # VS Code settings
 .vscode/
 
-run-server.sh
-
+# Project Specific Files
 RSSNotes
 .run-server.sh.swp
 pollrss/db_pollrss
 db_pollrss
+pollrss/django_secret
