@@ -101,11 +101,35 @@ class FeedObj():
                 ]
 
 
-    def __init__(self, elements = {}, items = {}):
+    path_elements = [
+                    "feed_title",
+                    "feed_description",
+                    "feed_link",
+                    "feed_language",
+                    "feed_copyright",
+                    "feed_pubDate",
+                    "feed_lastBuildDate",
+                    "feed_image",
+                    "feed_rating",
+                    "item_title",
+                    "item_link",
+                    "item_description",
+                    "item_author",
+                    "item_creator",
+                    "item_comments",
+                    "item_guid",
+                    "item_pubDate",
+                    "item_source"
+                ]
+
+
+    def __init__(self, elements = {}, items = {}, html_paths = None):
         self.elements = elements
         self.items = items
+        self.html_paths = html_paths
 
     #TODO: Refactor create_from_html method 
+    # -> Need a html_paths parameter
     @classmethod
     def create_from_html(cls, html: BeautifulSoup, link: str):
         """Create a FeedObj from html.
@@ -285,6 +309,7 @@ class FeedObj():
         """
 
         feed = self
+        source = "html"
 
         # Check for feed existence
         if (__feed_exists(rss_link)):
@@ -300,6 +325,15 @@ class FeedObj():
                 db_feed = Feed()
                 db_feed.rss_link = rss_link
                 db_feed.save()
+
+                # Add css selector paths to database
+                for path in feed.path_elements:
+                    if feed.html_paths[path] is not None:
+                        feed_path_field = FeedField(feed=db_feed)
+                        feed_path_field.name = path
+                        feed_path_field.value = feed.html_paths[path]
+                        feed_path_field.required = False
+                        feed_path_field.save()
 
                 # Add all feed elements to database
                 for feed_field_name in feed.elements:
