@@ -80,8 +80,9 @@ class FeedListView(generic.ListView):
 def viewfeed(request, feed_id):
     if request.method == 'GET':
 
-        rss_feed = rss.create_rss_feed_from_object(feed_id)
-        
+        feed = rss.FeedObj.create_from_database(feed_id)
+        rss_feed = rss.generate_rss_feed(feed)
+
         soup = BeautifulSoup(rss_feed.rss(), "xml")
         
         pretty_xml = soup.prettify()
@@ -103,8 +104,8 @@ def viewfeed(request, feed_id):
 @ensure_csrf_cookie
 def feed(request, feed_id):
     if request.method == 'GET':
-
-        rss_feed = rss.create_rss_feed_from_object(feed_id).rss()
+        feed = rss.FeedObj.create_from_database(feed_id)
+        rss_feed = feed.view_feed().rss()
 
         return HttpResponse(rss_feed, content_type='application/rss+xml')
         #return render(request, "ui/feed.xml", context)
@@ -116,5 +117,22 @@ def feed(request, feed_id):
 @ensure_csrf_cookie
 def test(request):
     if request.method == 'GET':
-        url = "http://rss.cnn.com/rss/cnn_topstories.rss"
-        return HttpResponseRedirect('/viewfeed/%s' % str(rss.write_feed_to_database(rss.read_feed_from_link(url), url)))
+        #link = "https://news.ycombinator.com/"
+
+        #r = requests.get(link)
+        #soup = BeautifulSoup(r.content, "html.parser")
+        #feed_obj = rss.FeedObj.create_from_html(soup, link)
+        #print (feed_obj.items)
+
+
+        #feed_obj = rss.FeedObj.create_from_database(13)
+        #rss_feed = feed_obj.view_feed().rss()
+        #return HttpResponse(rss_feed, content_type='application/rss+xml')
+
+        #link = "http://rss.cnn.com/rss/cnn_topstories.rss"
+        #feed_obj = rss.FeedObj.create_from_rss_link(link)
+        #rss_feed = feed_obj.view_feed().rss()
+        #return HttpResponse(rss_feed, content_type='application/rss+xml')
+        pass
+
+    return HttpResponseBadRequest('Parsed!')
